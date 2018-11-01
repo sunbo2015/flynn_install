@@ -1,0 +1,50 @@
+# Supfile for "Example"
+---
+version: 0.4
+
+networks:
+  prod:
+    hosts:
+      - 10.251.115.119
+      - 10.251.143.33
+      - 10.251.140.160
+      - 10.251.149.157
+      - 10.251.119.9
+      - 10.251.140.221
+      - 10.251.148.124
+      - 10.251.121.177
+      - 10.251.149.145
+      - 10.251.139.76
+            
+            
+commands:
+  # Named set of commands to be run remotely
+  ping:
+    desc: Print uname and current date/time.
+    run: uname -a; date
+
+  bash:
+    desc: Interactive shell on all hosts
+    stdin: true
+    run: bash
+    
+  upgrade:
+    desc: upgrade os version up-to-date
+    stdin: true
+    run: apt-get -y upgrade && -y apt-get upgrade && apt-get -y dist-upgrade
+    
+  upgrade-k:
+    desc: upgrade kernel version up-to-date
+    stdin: true
+    run: apt-get -y install linux-generic-lts-vivid  
+
+  upload:
+    desc: Upload dist files to all hosts
+    upload:
+      - src: ./dist
+        dst: /tmp/
+    
+  install-flynn:
+    desc: install flynn with all nodes 
+    run: cd /tmp/dist/ && bash flynn-init
+    
