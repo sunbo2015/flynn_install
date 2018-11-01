@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+
+# 1. setup env
+export http_proxy=http://10.10.10.10:3128
+export https_proxy=http://10.10.10.10:3128
+export no_proxy=*.domain.com
+
+# 2. import cert files
+for crt_file in $(ls crts); 
+do 
+    openssl x509 -hash -in crts/$crt_file -out /usr/local/share/ca-certificates/${crt_file/cer/crt};
+done 
+update-ca-certificates
+
+
+if [[ $(egrep '/dev/xvde1' /etc/fstab | wc -l) -gt 0 ]];
+then 
+    sed -i '/\/dev\/xvde1/d' /etc/fstab; 
+    umount /dev/xvde1
+fi
+
+
+bash install-flynn --zpool-create-device /dev/xvde1 --zpool-create-options "-f"
