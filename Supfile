@@ -31,13 +31,8 @@ commands:
   upgrade:
     desc: upgrade os version up-to-date
     stdin: true
-    run: apt-get -y upgrade && -y apt-get upgrade && apt-get -y dist-upgrade
+    run: apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y install linux-generic-lts-vivid  
     
-  upgrade-k:
-    desc: upgrade kernel version up-to-date
-    stdin: true
-    run: apt-get -y install linux-generic-lts-vivid  
-
   upload:
     desc: Upload dist files to all hosts
     upload:
@@ -46,5 +41,5 @@ commands:
     
   install-flynn:
     desc: install flynn with all nodes 
-    run: cd /tmp/dist/ && bash flynn-init
+    run: cd /tmp/dist/ && bash _install-flynn
     
