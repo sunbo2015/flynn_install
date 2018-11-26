@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+
+# 1. setup env
+export http_proxy=http://10.10.10.10:3128
+export https_proxy=http://10.10.10.10:3128
+export no_proxy=*.domain.com
+
+# 2. import cert files
+for crt_file in $(ls crts); 
+do 
+    openssl x509 -hash -in crts/$crt_file -out /usr/local/share/ca-certificates/${crt_file/cer/crt};
+done 
+update-ca-certificates
+
+
+if [[ $(egrep '/dev/xvde1' /etc/fstab | wc -l) -gt 0 ]];
+then 
+    sed -i '/\/dev\/xvde1/d' /etc/fstab; 
+    umount /dev/xvde1
+fi
+
+if [ ! /usr/local/bin/flynn-host ]; 
+then 
+    bash install-flynn --zpool-create-device /dev/xvde1 --zpool-create-options "-f"
+fi
+
+# curl -X POST -I -H "User-Agent: flynn-host/v20170719.0 linux-amd64" https://discovery.flynn.io/clusters 
+# 3. init descovery
+flynn-host init --discovery https://discovery.flynn.io/clusters/56b1abbd-19bb-4778-97a8-9b7a5ea21c3c
+
+# 4. start flynn-host
+if [[ $(egrep 'trusty' /etc/lsb-release | wc -l) -gt 0 ]];
+then
+    restart flynn-host
+else
+    systemctl restart flynn-host
+fi
+
+# 5. Bootstrap Flynn
+# flynn-host bootstrap \
+#     --min-hosts 3 \
+#     --discovery https://discovery.flynn.io/clusters/56b1abbd-19bb-4778-97a8-9b7a5ea21c3c
