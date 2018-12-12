@@ -31,7 +31,7 @@ commands:
   upgrade:
     desc: upgrade os version up-to-date
     stdin: true
-    run: apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y install linux-generic-lts-vivid  
+    run: apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y install linux-generic-lts-Xenial  
     
   upload:
     desc: Upload dist files to all hosts
