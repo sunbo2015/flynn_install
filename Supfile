@@ -29,6 +29,8 @@ commands:
     run: bash
     
   upgrade:
+    # dpkg --get-selections| grep linux
+    # dpkg -l linux-generic*
     desc: upgrade os version up-to-date
     stdin: true
     run: apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y install linux-generic-lts-Xenial  
