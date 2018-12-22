@@ -22,7 +22,7 @@ fi
 
 if [ ! /usr/local/bin/flynn-host ]; 
 then 
-    bash install-flynn --zpool-create-device /dev/xvde1 --zpool-create-options "-f"
+    bash install-flynn --zpool-create-device /dev/xvde1 --zpool-create-options "-f" -c nightly
 fi
 
 # curl -X POST -I -H "User-Agent: flynn-host/v20170719.0 linux-amd64" https://discovery.flynn.io/clusters 
