@@ -1,0 +1,54 @@
+#!/bin/bash
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "${ROOT}/script/lib/ui.sh"
+source "${ROOT}/script/lib/util.sh"
+
+
+main() {
+
+  local ip=$(ifconfig eth0 | awk '/inet addr/{print $2}' | sed 's/addr://')
+  local index=$(hostname)
+  local id=${index}
+  local bridge_name=flynn-br0
+  
+  local bin_dir="${ROOT}/build/bin"
+  local flynn_host="${bin_dir}/flynn-host"
+  
+  local pidfile="/tmp/flynn-host-${index}.pid"
+  local log="/tmp/flynn-host-${index}-$(date +%Y-%m-%dT%H-%M-%S.%N).log"
+  local log_dir="/var/log/flynn/host-${index}"
+
+  # kill flynn first
+  "${ROOT}/script/kill-flynn"
+    
+  # start flynn-host
+  info start flynn-host
+  sudo start-stop-daemon \
+      --start \
+      --background \
+      --no-close \
+      --pidfile "${pidfile}" \
+      --exec "${flynn_host}" \
+      -- \
+      daemon \
+      --id "${id}" \
+      --external-ip "${ip}" \
+      --listen-ip "${ip}" \
+      --bridge-name "${bridge_name}" \
+      --force \
+      --log-dir "${log_dir}" \
+      --max-job-concurrency=100 \
+      ${ips} \
+      &>"${log}"
+      
+      
+  info "bootstrapping Flynn"
+  export CLUSTER_DOMAIN="${CLUSTER_DOMAIN:-"${id}.localflynn.com"}"
+  export DISCOVERD="${ip/%/:1111}"
+  
+  "${flynn_host}" bootstrap --min-hosts 1 --peer-ips ${ip}
+
+}
+
+main $@
