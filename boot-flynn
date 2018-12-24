@@ -18,9 +18,16 @@ main() {
   local pidfile="/tmp/flynn-host-${index}.pid"
   local log="/tmp/flynn-host-${index}-$(date +%Y-%m-%dT%H-%M-%S.%N).log"
   local log_dir="/var/log/flynn/host-${index}"
+  
+  local state="/tmp/flynn-host-state-${index}.bolt"
+  local sinkstate="/tmp/flynn-host-sink-state-${index}.bolt"
 
   # kill flynn first
   "${ROOT}/script/kill-flynn"
+  
+  rm -rf ${state} ${sinkstate}
+  
+  ${flynn_host} destroy-volumes --include-data --keep-system-images
     
   # start flynn-host
   info start flynn-host
@@ -37,6 +44,8 @@ main() {
       --listen-ip "${ip}" \
       --bridge-name "${bridge_name}" \
       --force \
+      --state "${state}" \
+      --sink-state "${sinkstate}" \
       --log-dir "${log_dir}" \
       --max-job-concurrency=100 \
       ${ips} \
