@@ -53,7 +53,7 @@ main() {
       
       
   info "bootstrapping Flynn"
-  export CLUSTER_DOMAIN="${CLUSTER_DOMAIN:-"${id}.localflynn.com"}"
+  export CLUSTER_DOMAIN="${CLUSTER_DOMAIN:-"localflynn.com"}"
   export DISCOVERD="${ip/%/:1111}"
   
   "${flynn_host}" bootstrap --min-hosts 1 --peer-ips ${ip}
